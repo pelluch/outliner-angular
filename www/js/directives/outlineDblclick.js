@@ -5,7 +5,7 @@
  * an `escape` keydown event.
  */
  angular.module('outliner')
- .directive('sectionDblclick', function () {
+ .directive('outlineDblclick', function () {
  	'use strict';
 
 
@@ -13,11 +13,11 @@
 
  		var currentName, currentContent;
  		var ESCAPE_KEY = 27;
- 		var editField = elem.find("[section-edit]");
- 		var infoField = elem.find("[section-info]");
+ 		var editField = elem.find("[outline-edit]");
+ 		var infoField = elem.find("[outline-info]");
  		var saveChanges = true;
 
- 		if(scope.section.name === "" || !scope.section.name) {
+ 		if(scope.outline.name === "" || !scope.outline.name) {
  			showEdit();
  		}
  		else {
@@ -28,17 +28,17 @@
 
  			if(!saveChanges) return;
 
- 			if(scope.section.name && scope.section.name !== "") {
+ 			if(scope.outline.name && scope.outline.name !== "") {
  				
  				hideEdit();
 
- 				if(scope.section.id && scope.section && scope.section.$update) {
- 					scope.section.$update(function(section) {
- 						section.selected = true;
+ 				if(scope.outline.id && scope.outline && scope.outline.$update) {
+ 					scope.outline.$update(function(outline) {
+ 						outline.selected = true;
  						backupInfo();
  					});
  				} else {
- 					scope.section.$save(function() {
+ 					scope.outline.$save(function() {
  						backupInfo();
  					});
  				}
@@ -54,8 +54,8 @@
 
  		elem.bind('keydown', function (event) {
  			if (event.keyCode === ESCAPE_KEY) {
- 				scope.section.content = currentContent;
- 				scope.section.name = currentName;
+ 				scope.outline.content = currentContent;
+ 				scope.outline.name = currentName;
  				saveChanges = false;
  				hideEdit();
  				editField.blur();
@@ -64,8 +64,8 @@
  		});
 
  		function backupInfo() {
-			currentName = scope.section.name;
- 			currentContent = scope.section.content;
+			currentName = scope.outline.name;
+ 			currentContent = scope.outline.content;
  		}
 
  		function showEdit() {

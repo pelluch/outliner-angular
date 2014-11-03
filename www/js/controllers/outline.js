@@ -1,6 +1,6 @@
 
-angular.module('outliner').controller('OutlineController', ['$scope', '$location', '$http', 'Section', '$sce',
-	function OutlineController($scope, $location, $http, Section, $sce) {
+angular.module('outliner').controller('OutlineController', ['$scope', '$location', '$http', 'Outline', '$sce',
+	function OutlineController($scope, $location, $http, Outline, $sce) {
 		
 
 		// This takes care of syncronizing with backend when moving
@@ -13,12 +13,12 @@ angular.module('outliner').controller('OutlineController', ['$scope', '$location
 				var oldParentId = oldParent ? oldParent.id : null;
 				var newParentId = newParent ? newParent.id : null;
 
-				var movedSection = event.source.nodeScope.$modelValue;
-				movedSection.parent_id = newParentId;
-				movedSection.index = event.dest.index;
+				var movedOutline = event.source.nodeScope.$modelValue;
+				movedOutline.parent_id = newParentId;
+				movedOutline.index = event.dest.index;
 				
-				if(movedSection.$update) {
-					movedSection.$update({}, function(value, responseHeaders) {
+				if(movedOutline.$update) {
+					movedOutline.$update({}, function(value, responseHeaders) {
 					}, function(httpResponse) {
 						console.log(httpResponse);
 					});
@@ -26,50 +26,50 @@ angular.module('outliner').controller('OutlineController', ['$scope', '$location
 			}
 		};
 
-		var numSections = 0;
-		$scope.sectionList = [];
+		var numOutlines = 0;
+		$scope.outlineList = [];
 
-		// Fetch sections from backend
-		var sections = Section.query(function() {
-			$(sections).each(function(index, el) {
+		// Fetch outlines from backend
+		var outlines = Outline.query(function() {
+			$(outlines).each(function(index, el) {
 				el.selected = false;
-				$scope.sectionList.push(el);
+				$scope.outlineList.push(el);
 				resourcifyChildren(el);
 				
 			});
-			console.log(sections);
+			console.log(outlines);
 			
 		});
 
-		$scope.sections = sections;
+		$scope.outlines = outlines;
 
 
-		// When clicking on a section name
-		$scope.showContent = function(section) {
-			$scope.selectedSection = section;
+		// When clicking on a outline name
+		$scope.showContent = function(outline) {
+			$scope.selectedOutline = outline;
 		};
 		
 
-		$scope.removeSection = function(scope) {
+		$scope.removeOutline = function(scope) {
 			var removed = scope.$modelValue;
 			removed.$delete();
 			scope.remove(scope);
-			var removedIndex = $scope.sectionList.indexOf(removed);
-			$scope.sectionList.splice(removedIndex, 1);	
+			var removedIndex = $scope.outlineList.indexOf(removed);
+			$scope.outlineList.splice(removedIndex, 1);	
 		};
 
 		$scope.addRoot = function() {
 
 			console.log('Adding');
-			var newChild = new Section({ name: null, children: [], parent_id: null, 
-				index: $scope.sections.length });
-			$scope.sections.push(newChild);
+			var newChild = new Outline({ name: null, children: [], parent_id: null, 
+				index: $scope.outlines.length });
+			$scope.outlines.push(newChild);
 			
 			setTimeout(function() {
-				$scope.sectionList.push(newChild);	
+				$scope.outlineList.push(newChild);	
 			}, 0);
 
-			numSections++;
+			numOutlines++;
 		}
 
 		$scope.collapseAll = function() {
@@ -86,46 +86,46 @@ angular.module('outliner').controller('OutlineController', ['$scope', '$location
 			return angular.element(document.getElementById("tree-root")).scope();
 		};
 
-		$scope.addSection = function(scope) {
+		$scope.addOutline = function(scope) {
 			
-			var section = scope.$modelValue;
-			var children = section.children || [];
-			var newChild = new Section({ name: null, children: [], parent_id: section.id, 
+			var outline = scope.$modelValue;
+			var children = outline.children || [];
+			var newChild = new Outline({ name: null, children: [], parent_id: outline.id, 
 				index: children.length });
 
 			
 			children.push(newChild);
 			setTimeout(function() {
-				$scope.sectionList.push(newChild);	
+				$scope.outlineList.push(newChild);	
 			}, 0);
 			
 			//newChild.$save();
-			numSections++;
-			console.log($scope.sectionList.length);
-			console.log($scope.sections.length);
+			numOutlines++;
+			console.log($scope.outlineList.length);
+			console.log($scope.outlines.length);
 			
 		};
 
 		var trusted = {};
 		var placeholder = "Haga doble click para agregar contenido.";
 
-		$scope.sectionHtml = function(section) {
+		$scope.outlineHtml = function(outline) {
 
-			var html = section.content || placeholder;
+			var html = outline.content || placeholder;
 			if(html === "") html = placeholder;
 
 			return trusted[html] || (trusted[html] = $sce.trustAsHtml(html));
 		}
-		$scope.$watch($scope.sectionHtml, function() {
+		$scope.$watch($scope.outlineHtml, function() {
 
 		});
 
-		function resourcifyChildren(section) {
-			numSections++;
-			$(section.children).each(function(index, child) {
-				section.children[index] = new Section(child);
-				$scope.sectionList.push(section.children[index]);
-				resourcifyChildren(section.children[index]);
+		function resourcifyChildren(outline) {
+			numOutlines++;
+			$(outline.children).each(function(index, child) {
+				outline.children[index] = new Outline(child);
+				$scope.outlineList.push(outline.children[index]);
+				resourcifyChildren(outline.children[index]);
 
 			});
 		}

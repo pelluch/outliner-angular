@@ -1,0 +1,23 @@
+
+<div >
+	<div class="pull-left tree-handle ng-scope angular-ui-tree-handle" ui-tree-handle="">
+		<span class="glyphicon glyphicon-list"></span>
+	</div>
+	<div class="angular-ui-tree-content" ng-click="showContent(outline)">
+		<a class="btn btn-success btn-xs" data-nodrag ng-click="toggle(this)" >
+			<span class="glyphicon glyphicon-chevron-down" ng-class="{'glyphicon-chevron-right': collapsed, 'glyphicon-chevron-down': !collapsed}"></span>
+		</a>
+		<span outline-dblclick>
+			<input ng-model="outline.name" outline-edit></input>
+			<span data-nodrag outline-info >
+				{{ outline.name }}
+			</span>
+		</span>
+		<a class="pull-right btn btn-danger btn-xs" data-nodrag="" ng-click="removeOutline(this)"><span class="glyphicon glyphicon-remove"></span></a>
+		<a class="pull-right btn btn-primary btn-xs" data-nodrag="" ng-click="addOutline(this)" style="margin-right: 8px;"><span class="glyphicon glyphicon-plus"></span></a>
+	</div>
+</div>
+<ol ui-tree-nodes="" ng-model="outline.children" ng-hide="collapsed">
+	<li ng-repeat="outline in outline.children" ui-tree-node ng-include="'partials/outline.html'">
+	</li>
+</ol>
